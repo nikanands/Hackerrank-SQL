@@ -1,0 +1,256 @@
+1. Revising the Select Query I
+
+select * from city 
+where population > 100000 and 
+countrycode = 'USA' ;
+
+
+2. Revising the Select Query II
+
+select name from city
+where countrycode = 'USA' and 
+population > 120000 ;
+
+
+3. Select All
+
+select * from city ;
+
+
+4. Select By ID
+
+select * from city
+where id is 1661 ;
+
+
+5. Japanese Cities Attributes
+
+select * from city
+where countrycode = 'JPN' ;
+
+
+6. Japanese Cities Names
+
+select name from city
+where countrycode = 'JPN' ;
+
+
+7. Weather Observation Station 1
+
+select city, state from station ;
+
+
+8. Weather Observation Station 2
+
+select round(sum(lat_n),2) , round(sum(long_w),2) from station ;
+
+
+9. Weather Observation Station 3
+
+select distinct city from station
+where id % 2 = 0 ;
+
+
+10.  Weather Observation Station 4
+
+select count(city) - count(distinct city) from station ;
+
+
+11.  Weather Observation Station 5
+
+select city,length (city) from station 
+group by city 
+order by length(city),city limit 1;
+
+select city,length (city) from station 
+group by city 
+order by length(city) desc,city limit 1;
+
+
+12.  Weather Observation Station 6
+
+select distinct city from station 
+where left(city,1) in ('a','e','i','o','u') ;
+
+
+13.  Weather Observation Station 7
+
+select distinct city from station 
+where right(city,1) in ('a','e','i','o','u') ;
+
+
+14.  Weather Observation Station 8
+
+select distinct city from station
+where left(city,1) in ('a','e','i','o','u') and
+right(city,1) in ('a','e','i','o','u') ;
+
+
+15.  Weather Observation Station 9
+
+select distinct city from station
+where left(city,1) not in ('A','E','I','O','U') ;
+
+
+16.  Weather Observation Station 10
+
+select distinct city from station 
+where right(city,1) not in ('a','e','i','o','u') ;
+
+
+17.  Weather Observation Station 11
+
+select distinct city from station
+where left(city,1) not in ('a','e','i','o','u') or
+right(city,1) not in ('a','e','i','o','u') ;
+
+
+18.  Weather Observation Station 12
+
+select distinct city from station
+where left(city,1) not in ('a','e','i','o','u') and
+right(city,1) not in ('a','e','i','o','u') ;
+
+
+19. Hight Than 75 Marks
+
+select name from students 
+where marks > 75
+order by right(name, 3), id asc ;
+
+
+20. Employee Names
+
+select name from employee 
+order by name ;
+
+
+21. Employee Salaries
+
+select name from employee 
+where salary > 2000 and months < 10
+order by employee_id ;
+
+
+22. Type of Trianlge
+
+select 
+    case
+        when a+b <= c or a+c <= b or b+c <= a then 'Not A Triangle'
+        when a = b and b = c then 'Equilateral'
+        when a = b or b = c or a = c then 'Isosceles'
+        else 'Scalene'
+    end as triangletype
+from triangles ;
+
+
+23. Revising Aggregations - The Count Function
+
+select count(name) from city 
+where population > 100000 ;
+
+
+24. Revising Aggregations - The Sum Function
+
+select sum(population) from city
+where district = 'California' ;
+
+
+25. Revising Aggregations - Averages
+
+select avg(population) from city
+where district = 'California' ;
+
+
+26. Average Population
+
+select round(avg(population)) from city ;
+
+
+27. Japan Population
+
+select sum(population) from city
+where countrycode = 'JPN' ;
+
+
+28. Population Density Difference
+
+select max(population)-min(population) from city ;
+
+
+29. The Blunder
+
+select ceil(avg(salary) - avg(replace(salary, '0', ''))) from employees ;
+
+
+30. Top Earners
+
+select max(salary*months), count(name) from employee 
+where (salary*months) = (select max(salary*months) from employee) ;
+
+
+31. Weather Observation Station 13
+
+select round(sum(lat_n),4) from station
+where lat_n > 38.7880 and lat_n < 137.2345 ;
+
+
+32. Weather Observation Station 14
+
+select round(max(lat_n),4) from station
+where lat_n < 137.2345 ;
+
+
+33. Weather Observation Station 15
+
+select round(long_w, 4) from station
+where lat_n = (select max(lat_n) from station where lat_n < 137.2345) ;
+
+
+34. Weather Observation Station 16
+
+select round(min(lat_n),4) from station
+where lat_n > 38.7780 ;
+
+
+35. Weather Observation Station 17
+
+select round(long_w, 4) from station
+where lat_n = (select min(lat_n) from station where lat_n > 38.7780) ;
+
+
+36. Population Census
+
+select sum(city.population) from city 
+inner join country on city.countrycode = country.code
+where country.continent = 'Asia' ;
+
+
+37. African Cities
+
+select city.name from city 
+inner join country on city.countrycode = country.code
+where country.continent = 'Africa' ;
+
+
+38. Average Population of Each Continent
+
+select country.continent, floor(avg(city.population)) from city 
+inner join country on city.countrycode = country.code
+group by country.continent ;
+
+
+39. Draw the Triangle 1
+
+SET @row := 21;
+SELECT REPEAT('* ', @row := @row - 1) AS PATTERN
+FROM information_schema.tables
+WHERE @row > 1;
+
+40. Draw the Triangle 2
+
+SET @row := 0;
+SELECT REPEAT('* ', @row := @row + 1) AS PATTERN
+FROM information_schema.tables
+WHERE @row < 20;
+
