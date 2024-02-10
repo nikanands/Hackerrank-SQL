@@ -10,4 +10,133 @@ group by occupation
 order by c asc, occupation asc  ;
 
 
-2. 
+2. Occupations
+
+with A as (select
+          case when occupation = 'Doctor' then name end Doctor,
+          case when occupation = 'Professor' then name end Professor,
+          case when occupation = 'Actor' then name end Actor,
+          case when occupation = 'Singer' then name end Singer,
+          row_number() over (partition by occupation order by name) 
+          as B from occupations)
+          select max(Doctor), max(Professor), max(Singer), max(Actor) from A group by B ;
+
+
+3. Binary Tree Nodes
+
+select n, case 
+when p is null then 'Root' 
+when n in (select p from bst) then 'Inner' 
+else 'Leaf' end from bst order by n ;
+
+
+4. New Companies
+
+select c.company_code, c.founder, 
+count(distinct e.lead_manager_code), 
+count(distinct e.senior_manager_code), 
+count(distinct e.manager_code), 
+count(distinct e.employee_code) 
+from company as c 
+inner join employee as e on e.company_code = c.company_code
+group by c.company_code, c.founder
+order by c.company_code asc ;
+
+
+5. Weather Observation Station 18
+
+select round(abs(min(lat_n) - max(lat_n)) + abs((min(long_w) - max(long_w))), 4) from station ;
+
+
+6. Weather Observation Station 19
+
+select round(sqrt(power(min(lat_n)-max(lat_n),2) + power(min(long_w)-max(long_w),2)), 4) from station ;
+
+
+7. Weather Observation Station 20
+
+select 
+round(avg(lat_n), 4) as median 
+from (
+    select lat_n, row_number() over (order by lat_n) as row_num,
+     count(*) over () as total_rows
+     from station
+     ) as ranked
+     where row_num in (ceil(total_rows/2), floor(total_rows/2)+1) ;
+
+
+8. The Report
+
+select if(grade < 8, Null, name), grade, marks from students
+inner join grades 
+on students.marks between grades.min_mark and grades.max_mark
+order by grade desc, name, marks;
+
+
+9. Top Competitors
+
+select h.hacker_id, h.name from Submissions s
+left join hackers h
+on s.hacker_id = h.hacker_id
+left join challenges c
+on s.challenge_id = c.challenge_id
+left join difficulty d
+on c.difficulty_level = d.difficulty_level
+where s.score = d.score 
+group by h.hacker_id, h.name
+having count(s.score) > 1
+order by count(*) desc, h.hacker_id ;
+
+
+10. Olivander's Inventory
+
+select w.id, wp.age, w.coins_needed, w.power 
+from wands w
+inner join wands_property wp
+on w.code = wp.code
+where wp.is_evil = 0 and w.coins_needed =
+(
+select min(coins_needed)
+                       from wands w2 inner join pands_Property p2 
+                       ON w2.code = p2.code 
+                       where p2.is_evil = 0 AND wp.age = p2.age and w.power = w2.power
+)
+order by w.power desc, wp.age desc ;
+
+
+11. Challenges
+
+with c1 as (
+select h.hacker_id, h.name, count(c.challenge_id) total_ch
+from hackers h
+join challenges c
+on h.hacker_id = c.hacker_id
+group by h.hacker_id, h.name
+order by total_ch desc, h.hacker_id
+), 
+c2 as (
+select hacker_id, name, total_ch, 
+    (select count(*) from c1 as c3
+     where c3.total_ch = c1.total_ch
+    ) as d from c1
+    order by total_ch desc, hacker_id
+)
+
+select hacker_id, name, total_ch from c2
+where d = 1 or (
+d > 1 and total_ch = (select max(total_ch) from c1)
+)
+
+
+12. Contest Leaderboard
+
+select hacker_id, name, sum(ts) as ss
+from (
+select h.hacker_id, h.name, max(s.score) ts
+from hackers h
+join submissions s
+on h.hacker_id = s.hacker_id
+    where score > 0
+group by h.hacker_id, h.name, s.challenge_id) as t1
+group by hacker_id, name
+order by ss desc, hacker_id
