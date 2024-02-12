@@ -70,7 +70,7 @@ from (
 select if(grade < 8, Null, name), grade, marks from students
 inner join grades 
 on students.marks between grades.min_mark and grades.max_mark
-order by grade desc, name, marks;
+order by grade desc, name, marks ;
 
 
 9. Top Competitors
@@ -125,7 +125,7 @@ select hacker_id, name, total_ch,
 select hacker_id, name, total_ch from c2
 where d = 1 or (
 d > 1 and total_ch = (select max(total_ch) from c1)
-)
+) ;
 
 
 12. Contest Leaderboard
@@ -139,4 +139,53 @@ on h.hacker_id = s.hacker_id
     where score > 0
 group by h.hacker_id, h.name, s.challenge_id) as t1
 group by hacker_id, name
-order by ss desc, hacker_id
+order by ss desc, hacker_id ;
+
+
+13. SQL Project Planning
+
+with cte as 
+(
+    select 
+    *, end_date - row_number() over (order by end_date) as diff
+    from projects
+)
+select 
+    min(start_date) as ms, max(end_date) as me
+from cte
+group by diff
+order by me-ms, ms ;
+
+
+14. Placements
+
+select s.name from students s
+left join friends f on s.id = f.id
+left join packages p on f.id = p.id
+left join packages p1 on f.friend_id = p1.id
+where p1.salary > p.salary
+order by p1.salary ;
+
+
+15. Symmetric Pairs
+
+with func as (
+select x, y, row_number() over (order by x) as n
+    from functions
+)
+select distinct f1.x, f1.y 
+from func f1 join func f2 on f1.x = f2.y and f1.y = f2.x
+where f1.x <= f1.y and f1.n != f2.n
+order by f1.x ;
+
+
+16. Print Prime Numbers
+
+with recursive p(n) as 
+(
+select 1 union all select n+1 from p where n < 1000
+) select group_concat(n separator '&') from p where exists 
+(
+select 1 from p as num where p.n % num.n = 0
+    group by 1
+    having count(*) = 2 ;
